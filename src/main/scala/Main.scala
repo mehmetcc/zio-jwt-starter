@@ -1,7 +1,14 @@
+import configuration.{Configuration, ConfigurationLive}
 import zio._
-import zio.Console.printLine
+
+import scala.language.postfixOps
 
 object Main extends ZIOAppDefault {
+  private lazy val program = for {
+    config <- Configuration.load
+    _      <- ZIO.log(config toString)
+  } yield ()
+
   override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] =
-    printLine("Welcome to your first ZIO app!")
+    program.provide(ConfigurationLive.layer)
 }

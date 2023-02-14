@@ -16,5 +16,6 @@ lazy val root = (project in file("."))
       "dev.zio" %% "zio-config-magnolia" % ZioConfigVersion,
       "dev.zio" %% "zio-test"            % ZioVersion % Test
     ),
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )

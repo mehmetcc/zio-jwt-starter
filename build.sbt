@@ -1,11 +1,12 @@
 ThisBuild / scalaVersion     := "2.13.10"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "me.mehmetcc"
-ThisBuild / organizationName := "example"
+ThisBuild / organizationName := "mehmetcc"
 
-lazy val ZioVersion       = "2.0.8"
+lazy val ZioVersion       = "2.0.9"
 lazy val ZioConfigVersion = "3.0.7"
 
+// Main settings
 lazy val root = (project in file("."))
   .settings(
     name := "zio-jwt-starter",
@@ -19,3 +20,9 @@ lazy val root = (project in file("."))
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
+
+// Docker
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
+
+dockerUpdateLatest := true

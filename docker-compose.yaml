@@ -1,0 +1,36 @@
+version: "3"
+services:
+  app:
+    image: zio-jwt-starter:latest
+    container_name: app
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: "postgres:latest"
+    container_name: postgres
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 1s
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_DB=messagesdb
+  pgadmin:
+    image: "dpage/pgadmin4:latest"
+    container_name: pgadmin
+    restart: always
+    expose:
+      - 5050
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=mehmetccm@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin

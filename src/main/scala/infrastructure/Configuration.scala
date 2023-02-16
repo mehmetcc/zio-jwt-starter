@@ -6,10 +6,13 @@ import zio.config.typesafe._
 import zio.{IO, ULayer, ZIO, ZLayer}
 
 final case class ApplicationConfiguration(
-  httpConfiguration: HttpConfiguration
+  httpConfiguration: HttpConfiguration,
+  securityConfiguration: SecurityConfiguration
 )
 
 final case class HttpConfiguration(port: Int)
+
+final case class SecurityConfiguration(secretKey: String, expiryTime: Int)
 
 trait Configuration {
   def load: IO[ReadError[String], ApplicationConfiguration]

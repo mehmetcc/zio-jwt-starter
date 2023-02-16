@@ -1,13 +1,15 @@
-package configuration
+package infrastructure
 
 import zio.config._
 import zio.config.magnolia._
 import zio.config.typesafe._
 import zio.{IO, ULayer, ZIO, ZLayer}
 
-case class ApplicationConfiguration(httpConfiguration: HttpConfiguration)
+final case class ApplicationConfiguration(
+  httpConfiguration: HttpConfiguration
+)
 
-case class HttpConfiguration(port: Int)
+final case class HttpConfiguration(port: Int)
 
 trait Configuration {
   def load: IO[ReadError[String], ApplicationConfiguration]

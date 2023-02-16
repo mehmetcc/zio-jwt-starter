@@ -17,3 +17,7 @@
    ```bash
    sbt Docker / clean
    ```
+
+### Connecting to Postgresql from local pgadmin instance
+
+To connect database from a local Docker environment, the hostname should be `host.docker.internal`

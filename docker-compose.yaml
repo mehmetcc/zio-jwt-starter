@@ -3,11 +3,19 @@ services:
   app:
     image: zio-jwt-starter:latest
     container_name: app
+    expose:
+      - APP_PORT
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:${APP_PORT}"
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
   postgres:
     image: "postgres:latest"
     container_name: postgres
@@ -16,13 +24,16 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 1s
     expose:
-      - 5432
+      - POSTGRES_PORT
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgrespw
-      - POSTGRES_DB=messagesdb
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./src/main/sql:/docker-entrypoint-initdb.d/:ro
   pgadmin:
     image: "dpage/pgadmin4:latest"
     container_name: pgadmin
@@ -30,7 +41,12 @@ services:
     expose:
       - 5050
     ports:
-      - "5050:80"
+      - "${PGADMIN_PORT}:80"
     environment:
-      - PGADMIN_DEFAULT_EMAIL=mehmetccm@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+volumes:
+  postgres:
+  pgadmin:

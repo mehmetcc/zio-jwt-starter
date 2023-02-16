@@ -1,14 +1,17 @@
 package user
 
+import zio.json.{DeriveJsonDecoder, JsonDecoder}
 import zio.{IO, Task, ZIO}
 
 import scala.language.postfixOps
 
 case class UserValidationException(message: String) extends Throwable(message)
 
-case class User private (userId: Int, username: String, email: String, password: String)
+case class User(userId: Int = 0, username: String, email: String, password: String)
 
 object User {
+  implicit val decoder: JsonDecoder[User] = DeriveJsonDecoder.gen[User]
+
   private def validateUsername(username: String): IO[String, String] =
     if (username.matches("^[a-zA-Z0-9]+")) ZIO.succeed(username)
     else ZIO.fail(s"$username should be alphanumeric")
@@ -32,10 +35,17 @@ object User {
     if (password.length >= 6) ZIO.succeed(password)
     else ZIO.fail("password should be at least 6 digits")
 
-  def from(id: Int, username: String, email: String, password: String): Task[User] =
+  def from(userId: Int, username: String, email: String, password: String): Task[User] =
     ZIO
       .collectAllPar(List(validateUsername(username), validateEmail(email), validatePassword(password)))
       .withParallelism(3)
-      .map(details => User(id, details.head, details(1), details(2)))
+      .map(details => User(userId, details.head, details(1), details(2)))
+      .catchAll(errors => ZIO.fail(UserValidationException(errors)))
+
+  def from(username: String, email: String, password: String): Task[User] =
+    ZIO
+      .collectAllPar(List(validateUsername(username), validateEmail(email), validatePassword(password)))
+      .withParallelism(3)
+      .map(details => User(0, details.head, details(1), details(2)))
       .catchAll(errors => ZIO.fail(UserValidationException(errors)))
 }
